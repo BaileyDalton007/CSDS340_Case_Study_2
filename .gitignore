@@ -1,0 +1,10 @@
+*
+
+!*.py
+!*.ipynb
+!*.csv
+!*.md
+!*.pdf
+!.gitignore
+
+!*/
