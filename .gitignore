@@ -6,5 +6,6 @@
 !*.md
 !*.pdf
 !.gitignore
+!*.pth
 
 !*/
