@@ -4,6 +4,22 @@ import torch.nn as nn
 import torch
 import numpy as np
 
+# create sequences of features to query the rnn with unlabeled data
+def create_feature_sequences(features, seq_length):
+    # Generate sequences and corresponding labels
+    sequences = []
+
+    # pad the first few sequences with zero vectors
+    empty_vectors = np.zeros((seq_length-1, features.shape[1], features.shape[2]))
+    features = np.vstack((empty_vectors, features))
+
+    for i in range(len(features)-seq_length+1):
+        sequence = features[i:i + seq_length] 
+        sequences.append(sequence.transpose(0, 2, 1))
+        
+    sequences = torch.tensor(sequences, dtype=torch.float32)
+
+    return sequences
 
 # create sequences of examples to learn the temporal relationship between them.
 def create_data_sequences(features, labels, seq_length):
@@ -11,19 +27,33 @@ def create_data_sequences(features, labels, seq_length):
     sequences = []
     sequence_labels = []
 
-    for i in range(len(features) - seq_length + 1):
+    # pad the first few sequences with zero vectors
+    empty_vectors = np.zeros((seq_length-1, features.shape[1], features.shape[2]))
+    features = np.vstack((empty_vectors, features))
+
+
+    for i in range(len(features)-seq_length+1):
         sequence = features[i:i + seq_length] 
         sequences.append(sequence.transpose(0, 2, 1))
         
         # Use the label of the last example in the sequence as the sequence label
-        sequence_labels.append(labels[i + seq_length - 1])
+        sequence_labels.append(labels[i])
 
     sequences = torch.tensor(sequences, dtype=torch.float32)
     sequence_labels = torch.tensor(sequence_labels, dtype=torch.long)
 
+
     return sequences, sequence_labels
 
+# transforms data into magnitudes for linear and rotational acceleration
+def transform_new_data(data):
+    acc_data = data[:,:, 0:3]
+    gyr_data = data[:,:, 3:6]
 
+    total_acc = np.linalg.norm(acc_data, axis=-1)
+    total_gyr = np.linalg.norm(gyr_data, axis=-1)
+
+    return np.stack((total_acc, total_gyr), axis=-1)
 
 def compute_accuracy(outputs, targets):
     predicted_classes = torch.argmax(outputs, dim=1)
