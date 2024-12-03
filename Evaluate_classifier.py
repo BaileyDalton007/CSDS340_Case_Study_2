@@ -29,8 +29,8 @@ def load_sensor_data(sensor_names, suffix):
 # Load labels and sensor data into 3-D array
 train_labels = np.loadtxt('labels' + train_suffix, dtype='int')
 train_data = load_sensor_data(sensor_names, train_suffix)
-test_labels = np.loadtxt('labels' + train_suffix, dtype='int')# TODO fix back to test_suffix
-test_data = load_sensor_data(sensor_names, train_suffix) # TODO fix back to test_suffix
+test_labels = np.loadtxt('labels' + test_suffix, dtype='int')
+test_data = load_sensor_data(sensor_names, test_suffix)
 
 # Predict activities on test data
 test_outputs = predict_test(train_data, train_labels, test_data)
