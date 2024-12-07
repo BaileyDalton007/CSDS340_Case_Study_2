@@ -53,7 +53,24 @@ def transform_new_data(data):
     total_acc = np.linalg.norm(acc_data, axis=-1)
     total_gyr = np.linalg.norm(gyr_data, axis=-1)
 
-    return np.stack((total_acc, total_gyr), axis=-1)
+    x = acc_data[:, :, 0]
+    y = acc_data[:, :, 1]
+    z = acc_data[:, :, 2]
+
+
+    jerk_x = np.diff(x, axis=1)
+    jerk_y = np.diff(y, axis=1)
+    jerk_z = np.diff(z, axis=1)
+
+    jerk_x = np.hstack((np.zeros((jerk_x.shape[0], 1)), jerk_x))
+    jerk_y = np.hstack((np.zeros((jerk_y.shape[0], 1)), jerk_y))
+    jerk_z = np.hstack((np.zeros((jerk_z.shape[0], 1)), jerk_z))
+
+    jerk_magnitude = np.sqrt(jerk_x**2 + jerk_y**2 + jerk_z**2)
+
+
+
+    return np.stack((total_acc, total_gyr, jerk_magnitude), axis=-1)
 
 def compute_accuracy(outputs, targets):
     predicted_classes = torch.argmax(outputs, dim=1)

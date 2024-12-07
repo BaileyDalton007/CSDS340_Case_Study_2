@@ -14,7 +14,7 @@ SEQUENCE_LENGTH = 5
 
 def predict_test(train_data, train_labels, test_data):
     # load the model from a pretrained weight file
-    model = CNN_RNN_Model()
+    model = CNN_RNN_Model(num_classes=4, input_channels=3, feature_length=60)
     state_dict = torch.load(MODEL_PATH)
     model.load_state_dict(state_dict)
     model.eval()
